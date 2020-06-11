@@ -42,7 +42,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE -O3)
 target_compile_options(${PROJECT_NAME} PRIVATE -fvisibility=hidden -fvisibility-inlines-hidden)
 target_compile_options(${PROJECT_NAME} PRIVATE -ffunction-sections -fdata-sections)
 #target_compile_options(${PROJECT_NAME} PRIVATE -fno-rtti)
-target_link_options(${PROJECT_NAME} PRIVATE -Wl,-soname)
+target_link_options(${PROJECT_NAME} PRIVATE -Wl)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE __EMSCRIPTEN__)
 
