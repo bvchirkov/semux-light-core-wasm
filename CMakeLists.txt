@@ -99,6 +99,7 @@ target_include_directories(${PROJECT_NAME}
 target_link_directories(${PROJECT_NAME}
 	PRIVATE ${DESTDIR}
 	)
+target_link_options(${PROJECT_NAME} PRIVATE -L${DESTDIR})
 
 target_link_libraries(${PROJECT_NAME}
 	PRIVATE
