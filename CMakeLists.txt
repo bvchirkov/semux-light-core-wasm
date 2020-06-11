@@ -36,7 +36,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 target_compile_options(${PROJECT_NAME} PRIVATE -std=gnu++2a)
 target_compile_options(${PROJECT_NAME} PRIVATE -fexceptions)
-target_compile_options(${PROJECT_NAME} PRIVATE -s WASM=1 -s MAIN_MODULE=1)
+target_compile_options(${PROJECT_NAME} PRIVATE -s WASM=1)
 target_compile_options(${PROJECT_NAME} PRIVATE -O3)
 
 target_compile_options(${PROJECT_NAME} PRIVATE -fvisibility=hidden -fvisibility-inlines-hidden)
