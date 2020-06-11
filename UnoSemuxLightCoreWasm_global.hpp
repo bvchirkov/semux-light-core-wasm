@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../GpCore2/GpCore.hpp"
-#include "../GpCryptoCore/GpCryptoCore.hpp"
+//#include "../GpCore2/GpCore.hpp"
+//#include "../GpCryptoCore/GpCryptoCore.hpp"
 #include "../UnoSemuxLightCore/UnoSemuxLightCore.hpp"
 
 #if !defined(__EMSCRIPTEN__)

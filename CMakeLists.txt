@@ -41,7 +41,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE -O3)
 target_compile_options(${PROJECT_NAME} PRIVATE -fvisibility=hidden -fvisibility-inlines-hidden)
 target_compile_options(${PROJECT_NAME} PRIVATE -ffunction-sections -fdata-sections)
 #target_compile_options(${PROJECT_NAME} PRIVATE -fno-rtti)
-target_link_options(${PROJECT_NAME} PRIVATE -Wl,--gc-sections)
+#target_link_options(${PROJECT_NAME} PRIVATE -Wl,--gc-sections)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE __EMSCRIPTEN__)
 
@@ -53,10 +53,10 @@ if(CMAKE_BUILD_TYPE MATCHES Debug)
 	set(TARGET _d)
 	set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}$<$<CONFIG:Debug>:${TARGET}>")
 	target_compile_options(${PROJECT_NAME} PRIVATE -fsanitize=address -fsanitize=undefined -fno-sanitize=vptr)
-	target_link_libraries(${PROJECT_NAME}
-		asan
-		ubsan
-		)
+#	target_link_libraries(${PROJECT_NAME}
+#		asan
+#		ubsan
+#		)
 	set(Boost_USE_DEBUG_LIBS	ON)
 else()
 	message("-- [${PROJECT_NAME}]: ***************** Build mode RELEASE *****************")
