@@ -77,21 +77,21 @@ set(GPCRYPTOCORE	GpCryptoCore)
 set(LIBSODIUM		sodium)
 
 set(SEMUXLIGHTCORE  UnoSemuxLightCore)
-if (NOT EXISTS ${DESTDIR}/lib${SEMUXLIGHTCORE}.so)
-	message("-- [${PROJECT_NAME}]: ${SEMUXLIGHTCORE} not found")
-	ExternalProject_Add(${SEMUXLIGHTCORE}_ext
-		PREFIX			  "."
-		DOWNLOAD_DIR	  "${CMAKE_SOURCE_DIR}/../${SEMUXLIGHTCORE}"
-		SOURCE_DIR		  "${CMAKE_SOURCE_DIR}/../${SEMUXLIGHTCORE}"
-		STAMP_DIR		  "${PREFIX_FOR_EXTERNAL_TMP}"
-		TMP_DIR			  "${PREFIX_FOR_EXTERNAL_TMP}"
-		GIT_REPOSITORY    https://github.com/bvchirkov/UnoSemuxLightCore.git
-#		GIT_TAG			  aa49a351d06927fcc9e4e5d15ab73a78bdbe3f5f
-		CMAKE_ARGS		  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_CXX_COMPILER=g++-9
-		BUILD_IN_SOURCE   ON
-		INSTALL_COMMAND	  make -j4 install
-	)
-endif()
+#if (NOT EXISTS ${DESTDIR}/lib${SEMUXLIGHTCORE}.so)
+#	message("-- [${PROJECT_NAME}]: ${SEMUXLIGHTCORE} not found")
+#	ExternalProject_Add(${SEMUXLIGHTCORE}_ext
+#		PREFIX			  "."
+#		DOWNLOAD_DIR	  "${CMAKE_SOURCE_DIR}/../${SEMUXLIGHTCORE}"
+#		SOURCE_DIR		  "${CMAKE_SOURCE_DIR}/../${SEMUXLIGHTCORE}"
+#		STAMP_DIR		  "${PREFIX_FOR_EXTERNAL_TMP}"
+#		TMP_DIR			  "${PREFIX_FOR_EXTERNAL_TMP}"
+#		GIT_REPOSITORY    https://github.com/bvchirkov/UnoSemuxLightCore.git
+##		GIT_TAG			  aa49a351d06927fcc9e4e5d15ab73a78bdbe3f5f
+#		CMAKE_ARGS		  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_CXX_COMPILER=g++-9
+#		BUILD_IN_SOURCE   ON
+#		INSTALL_COMMAND	  make -j4 install
+#	)
+#endif()
 
 target_include_directories(${PROJECT_NAME}
 	PRIVATE ${EXTRAS}
