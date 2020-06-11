@@ -28,7 +28,7 @@ add_compile_definitions(
 	)
 
 set(TOOLS						"/cpp/emsdk/upstream/emscripten")
-set(CMAKE_TOOLCHAIN_FILE		"${TOOLS}/cmake/Modules/Platform/Emscripten.cmake")
+#set(CMAKE_TOOLCHAIN_FILE		"${TOOLS}/cmake/Modules/Platform/Emscripten.cmake")
 set(CMAKE_CXX_COMPILER			${TOOLS}/em++)
 set(CMAKE_C_COMPILER			${TOOLS}/emcc)
 set(CMAKE_CXX_STANDARD			20)
@@ -68,56 +68,27 @@ set(EXECUTABLE_OUTPUT_PATH			${CMAKE_BINARY_DIR})
 set(LIBRARY_OUTPUT_PATH				${CMAKE_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY	${CMAKE_BINARY_DIR})
 
-set(GPCORE2  GpCore2)
-if (NOT EXISTS ${EXTRAS}/${GPCORE2})
-	message("-- [${PROJECT_NAME}]: ${GPCORE2} not found")
-	ExternalProject_Add(${GPCORE2}_ext
-		PREFIX			  "."
-		DOWNLOAD_DIR	  "${CMAKE_SOURCE_DIR}/../${GPCORE2}"
-		SOURCE_DIR		  "${CMAKE_SOURCE_DIR}/../${GPCORE2}"
-		STAMP_DIR		  "${PREFIX_FOR_EXTERNAL_TMP}"
-		TMP_DIR			  "${PREFIX_FOR_EXTERNAL_TMP}"
-		GIT_REPOSITORY    https://github.com/bvchirkov/GpCore2.git
-#		GIT_TAG			  8d07be310fe568a011886fbc49807475558c150a
-		CMAKE_ARGS		  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_CXX_COMPILER=g++-9
-		BUILD_IN_SOURCE   ON
-	)
-endif()
+set(GPCORE2			GpCore2)
+set(UTF8PROC		utf8proc)
+set(GPCRYPTOCORE	GpCryptoCore)
+set(LIBSODIUM		sodium)
 
-set(UTF8PROC utf8proc)
-if (NOT EXISTS ${EXTRAS}/${UTF8PROC})
-	message("-- [${PROJECT_NAME}]: ${UTF8PROC} not found")
-	ExternalProject_Add(${UTF8PROC}_ext
+set(SEMUXLIGHTCORE  UnoSemuxLightCore)
+if (NOT EXISTS ${DESTDIR}/lib${SEMUXLIGHTCORE}.so)
+	message("-- [${PROJECT_NAME}]: ${SEMUXLIGHTCORE} not found")
+	ExternalProject_Add(${SEMUXLIGHTCORE}_ext
 		PREFIX			  "."
-		DOWNLOAD_DIR	  "${CMAKE_SOURCE_DIR}/../${UTF8PROC}"
-		SOURCE_DIR		  "${CMAKE_SOURCE_DIR}/../${UTF8PROC}"
+		DOWNLOAD_DIR	  "${CMAKE_SOURCE_DIR}/../${SEMUXLIGHTCORE}"
+		SOURCE_DIR		  "${CMAKE_SOURCE_DIR}/../${SEMUXLIGHTCORE}"
 		STAMP_DIR		  "${PREFIX_FOR_EXTERNAL_TMP}"
 		TMP_DIR			  "${PREFIX_FOR_EXTERNAL_TMP}"
-		GIT_REPOSITORY    https://github.com/bvchirkov/utf8proc.git
-#		GIT_TAG			  f127e56115c4c0c9ba3e7da4ebf730caef077ee3
-		CMAKE_ARGS		  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_CXX_COMPILER=g++-9
-		BUILD_IN_SOURCE   ON
-	)
-endif()
-
-set(GPCRYPTOCORE GpCryptoCore)
-if (NOT EXISTS ${EXTRAS}/${GPCRYPTOCORE})
-	message("-- [${PROJECT_NAME}]: ${GPCRYPTOCORE} not found")
-	ExternalProject_Add(${GPCRYPTOCORE}_ext
-		PREFIX			  "."
-		DOWNLOAD_DIR	  "${CMAKE_SOURCE_DIR}/../${GPCRYPTOCORE}"
-		SOURCE_DIR		  "${CMAKE_SOURCE_DIR}/../${GPCRYPTOCORE}"
-		STAMP_DIR		  "${PREFIX_FOR_EXTERNAL_TMP}"
-		TMP_DIR			  "${PREFIX_FOR_EXTERNAL_TMP}"
-		GIT_REPOSITORY    https://github.com/bvchirkov/GpCryptoCore.git
+		GIT_REPOSITORY    https://github.com/bvchirkov/UnoSemuxLightCore.git
 #		GIT_TAG			  aa49a351d06927fcc9e4e5d15ab73a78bdbe3f5f
 		CMAKE_ARGS		  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_CXX_COMPILER=g++-9
 		BUILD_IN_SOURCE   ON
+		INSTALL_COMMAND	  make -j4 install
 	)
 endif()
-
-set(LIBSODIUM		sodium)
-set(SEMUXLIGHTCORE  UnoSemuxLightCore)
 
 target_include_directories(${PROJECT_NAME}
 	PRIVATE ${EXTRAS}
