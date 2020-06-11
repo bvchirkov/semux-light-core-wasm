@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.13...3.17)
 include(ExternalProject)
+#include(FetchContent)
 
 project(UnoSemuxLightCoreWasm
 	VERSION 0.1.0
@@ -45,26 +46,9 @@ target_compile_options(${PROJECT_NAME} PRIVATE -ffunction-sections -fdata-sectio
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE __EMSCRIPTEN__)
 
-#------------------------ DEBUG or RELEASE ---------------------
-if(CMAKE_BUILD_TYPE MATCHES Debug)
-	message("-- [${PROJECT_NAME}]: ***************** Build mode DEBUG *****************")
-	target_compile_definitions(${PROJECT_NAME} PRIVATE DEBUG_BUILD)
-	set(OUT_BUILD_MODE_PATH Debug)
-	set(TARGET _d)
-	set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "${PROJECT_NAME}$<$<CONFIG:Debug>:${TARGET}>")
-	target_compile_options(${PROJECT_NAME} PRIVATE -fsanitize=address -fsanitize=undefined -fno-sanitize=vptr)
-#	target_link_libraries(${PROJECT_NAME}
-#		asan
-#		ubsan
-#		)
-	set(Boost_USE_DEBUG_LIBS	ON)
-else()
-	message("-- [${PROJECT_NAME}]: ***************** Build mode RELEASE *****************")
-	set(Boost_USE_RELEASE_LIBS		ON)
-	set(OUT_BUILD_MODE_PATH Release)
-	set(TARGET_POSTFIX)
-	target_compile_definitions(${PROJECT_NAME} PRIVATE RELEASE_BUILD)
-endif()
+message("-- [${PROJECT_NAME}]: ***************** Build mode RELEASE *****************")
+set(OUT_BUILD_MODE_PATH Release)
+target_compile_definitions(${PROJECT_NAME} PRIVATE RELEASE_BUILD)
 
 #------------------------ ARC ---------------------
 set(CMAKE_HOST_SYSTEM_PROCESSOR wasm32)
@@ -87,7 +71,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY	${CMAKE_BINARY_DIR})
 set(GPCORE2  GpCore2)
 if (NOT EXISTS ${EXTRAS}/${GPCORE2})
 	message("-- [${PROJECT_NAME}]: ${GPCORE2} not found")
-	ExternalProject_Add(${GPCORE2}
+	ExternalProject_Add(${GPCORE2}_ext
 		PREFIX			  "."
 		DOWNLOAD_DIR	  "${CMAKE_SOURCE_DIR}/../${GPCORE2}"
 		SOURCE_DIR		  "${CMAKE_SOURCE_DIR}/../${GPCORE2}"
@@ -103,7 +87,7 @@ endif()
 set(UTF8PROC utf8proc)
 if (NOT EXISTS ${EXTRAS}/${UTF8PROC})
 	message("-- [${PROJECT_NAME}]: ${UTF8PROC} not found")
-	ExternalProject_Add(${UTF8PROC}
+	ExternalProject_Add(${UTF8PROC}_ext
 		PREFIX			  "."
 		DOWNLOAD_DIR	  "${CMAKE_SOURCE_DIR}/../${UTF8PROC}"
 		SOURCE_DIR		  "${CMAKE_SOURCE_DIR}/../${UTF8PROC}"
@@ -119,7 +103,7 @@ endif()
 set(GPCRYPTOCORE GpCryptoCore)
 if (NOT EXISTS ${EXTRAS}/${GPCRYPTOCORE})
 	message("-- [${PROJECT_NAME}]: ${GPCRYPTOCORE} not found")
-	ExternalProject_Add(${GPCRYPTOCORE}
+	ExternalProject_Add(${GPCRYPTOCORE}_ext
 		PREFIX			  "."
 		DOWNLOAD_DIR	  "${CMAKE_SOURCE_DIR}/../${GPCRYPTOCORE}"
 		SOURCE_DIR		  "${CMAKE_SOURCE_DIR}/../${GPCRYPTOCORE}"
@@ -145,12 +129,13 @@ target_link_directories(${PROJECT_NAME}
 	PRIVATE ${DESTDIR}
 	)
 
-target_link_libraries(${PROJECT_NAME} SHARED
-	${LIBSODIUM}
-	${GPCORE2}${TARGET}
-	${UTF8PROC}${TARGET}
-	${GPCRYPTOCORE}${TARGET}
-	${SEMUXLIGHTCORE}${TARGET}
+target_link_libraries(${PROJECT_NAME}
+	PRIVATE
+		${LIBSODIUM}
+		${GPCORE2}
+		${UTF8PROC}
+		${GPCRYPTOCORE}
+		${SEMUXLIGHTCORE}
 	)
 
 message("-- [${PROJECT_NAME}]: Target name:              " ${PROJECT_NAME}${TARGET})
