@@ -137,9 +137,6 @@ set(SEMUXLIGHTCORE  UnoSemuxLightCore)
 
 target_include_directories(${PROJECT_NAME}
 	PRIVATE ${EXTRAS}
-#	PRIVATE ${EXTRAS}/${GPCORE2}
-#	PRIVATE ${EXTRAS}/${UTF8PROC}
-#	PRIVATE ${EXTRAS}/${GPCRYPTOCORE}
 	PRIVATE ${EXTRAS}/${SEMUXLIGHTCORE}
 	PRIVATE "/cpp/emsdk/upstream/emscripten/system/include"
 	)
@@ -148,7 +145,7 @@ target_link_directories(${PROJECT_NAME}
 	PRIVATE ${DESTDIR}
 	)
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME} SHARED
 	${LIBSODIUM}
 	${GPCORE2}${TARGET}
 	${UTF8PROC}${TARGET}
