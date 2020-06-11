@@ -28,7 +28,7 @@ add_compile_definitions(
 	)
 
 set(TOOLS						"/cpp/emsdk/upstream/emscripten")
-#set(CMAKE_TOOLCHAIN_FILE		"${TOOLS}/cmake/Modules/Platform/Emscripten.cmake")
+set(CMAKE_TOOLCHAIN_FILE		"${TOOLS}/cmake/Modules/Platform/Emscripten.cmake")
 set(CMAKE_CXX_COMPILER			${TOOLS}/em++)
 set(CMAKE_C_COMPILER			${TOOLS}/emcc)
 set(CMAKE_CXX_STANDARD			20)
@@ -42,7 +42,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE -O3)
 target_compile_options(${PROJECT_NAME} PRIVATE -fvisibility=hidden -fvisibility-inlines-hidden)
 target_compile_options(${PROJECT_NAME} PRIVATE -ffunction-sections -fdata-sections)
 #target_compile_options(${PROJECT_NAME} PRIVATE -fno-rtti)
-#target_link_options(${PROJECT_NAME} PRIVATE -Wl,--gc-sections)
+target_link_options(${PROJECT_NAME} PRIVATE -Wl,-soname)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE __EMSCRIPTEN__)
 
@@ -117,5 +117,5 @@ message("-- [${PROJECT_NAME}]: C++ standart:             " ${CMAKE_CXX_STANDARD}
 message("-- [${PROJECT_NAME}]: GCC C compiler version:   " ${CMAKE_C_COMPILER})
 message("-- [${PROJECT_NAME}]: GCC C++ compiler version: " ${CMAKE_CXX_COMPILER})
 
-#set_property(TARGET ${PROJECT_NAME} PROPERTY VERSION ${PROJECT_VERSION})
-#set_property(TARGET ${PROJECT_NAME} PROPERTY SOVERSION ${PROJECT_VERSION_MAJOR})
+set_property(TARGET ${PROJECT_NAME} PROPERTY VERSION ${PROJECT_VERSION})
+set_property(TARGET ${PROJECT_NAME} PROPERTY SOVERSION ${PROJECT_VERSION_MAJOR})
