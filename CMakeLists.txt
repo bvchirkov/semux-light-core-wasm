@@ -42,8 +42,8 @@ target_compile_options(${PROJECT_NAME} PRIVATE -O3)
 target_compile_options(${PROJECT_NAME} PRIVATE -fvisibility=hidden -fvisibility-inlines-hidden)
 target_compile_options(${PROJECT_NAME} PRIVATE -ffunction-sections -fdata-sections)
 #target_compile_options(${PROJECT_NAME} PRIVATE -fno-rtti)
-target_link_options(${PROJECT_NAME} PRIVATE -Wl)
-set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-shared -soname -s DEMANGLE_SUPPORT=1 --preload-file assets --bind")
+target_link_options(${PROJECT_NAME} PRIVATE -Wl -s SIDE_MODULE=1)
+set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-s DEMANGLE_SUPPORT=1 --preload-file assets --bind")
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE __EMSCRIPTEN__)
 
