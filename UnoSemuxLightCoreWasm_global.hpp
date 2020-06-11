@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../GpCore/GpCore.hpp"
+#include "../GpCore2/GpCore.hpp"
 #include "../GpCryptoCore/GpCryptoCore.hpp"
 #include "../UnoSemuxLightCore/UnoSemuxLightCore.hpp"
 
