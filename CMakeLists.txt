@@ -34,7 +34,7 @@ set(CMAKE_C_COMPILER			${TOOLS}/emcc)
 set(CMAKE_CXX_STANDARD			20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-target_compile_options(${PROJECT_NAME} PRIVATE -std=gnu++2a)
+target_compile_options(${PROJECT_NAME} PRIVATE -std=c++2a)
 target_compile_options(${PROJECT_NAME} PRIVATE -fexceptions)
 target_compile_options(${PROJECT_NAME} PRIVATE -s WASM=1)
 target_compile_options(${PROJECT_NAME} PRIVATE -O3)
@@ -51,9 +51,6 @@ message("-- [${PROJECT_NAME}]: ***************** Build mode RELEASE ************
 set(OUT_BUILD_MODE_PATH Release)
 target_compile_definitions(${PROJECT_NAME} PRIVATE RELEASE_BUILD)
 
-#------------------------ ARC ---------------------
-set(CMAKE_HOST_SYSTEM_PROCESSOR wasm32)
-
 set(PROJECT_BINARY_DIR		"${CMAKE_SOURCE_DIR}/../../bin")
 set(PROJECT_LIBRARY_DIR		"${CMAKE_SOURCE_DIR}/../../lib")
 set(EXTRAS					"${CMAKE_SOURCE_DIR}/../../include")
@@ -62,7 +59,7 @@ set(PREFIX_FOR_EXTERNAL_TMP "${CMAKE_SOURCE_DIR}/../../tmp")
 file(MAKE_DIRECTORY ${EXTRAS})
 
 set(SP _)
-set(BUILD_NAME_DIR	"${CMAKE_BUILD_TYPE}${SP}${CMAKE_SYSTEM_NAME}${SP}${CMAKE_HOST_SYSTEM_PROCESSOR}")
+set(BUILD_NAME_DIR	"${CMAKE_BUILD_TYPE}${SP}${CMAKE_SYSTEM_NAME}${SP}${SYSTEM_PROCESSOR}")
 set(DESTDIR			"${PROJECT_BINARY_DIR}/${BUILD_NAME_DIR}")
 set(LIBDIR			"${PROJECT_LIBRARY_DIR}/${CMAKE_BUILD_TYPE}${SP}Linux${SP}x86_64")
 
@@ -77,7 +74,7 @@ set(GPCRYPTOCORE	GpCryptoCore)
 set(LIBSODIUM		sodium)
 
 set(SEMUXLIGHTCORE  UnoSemuxLightCore)
-if (NOT EXISTS ${DESTDIR}/lib${SEMUXLIGHTCORE}.so)
+if (NOT EXISTS ${DESTDIR}/lib${SEMUXLIGHTCORE}.a)
 	message("-- [${PROJECT_NAME}]: ${SEMUXLIGHTCORE} not found")
 	ExternalProject_Add(${SEMUXLIGHTCORE}_ext
 		PREFIX			  "."
@@ -87,9 +84,9 @@ if (NOT EXISTS ${DESTDIR}/lib${SEMUXLIGHTCORE}.so)
 		TMP_DIR			  "${PREFIX_FOR_EXTERNAL_TMP}"
 		GIT_REPOSITORY    https://github.com/bvchirkov/UnoSemuxLightCore.git
 #		GIT_TAG			  aa49a351d06927fcc9e4e5d15ab73a78bdbe3f5f
-		CMAKE_ARGS		  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_CXX_COMPILER=g++-9
+		CMAKE_ARGS		  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DSYSTEM_PROCESSOR=wasm32
 		BUILD_IN_SOURCE   ON
-		INSTALL_COMMAND	  make -j4 install
+		INSTALL_COMMAND	  ${TOOLS}/emmake make -j4 install
 	)
 endif()
 
@@ -113,7 +110,7 @@ target_link_libraries(${PROJECT_NAME}
 	)
 
 message("-- [${PROJECT_NAME}]: Target name:              " ${PROJECT_NAME}${TARGET})
-message("-- [${PROJECT_NAME}]: Target arch:              " ${CMAKE_HOST_SYSTEM_PROCESSOR})
+message("-- [${PROJECT_NAME}]: Target arch:              " ${SYSTEM_PROCESSOR})
 message("-- [${PROJECT_NAME}]: Target OS:                " ${CMAKE_SYSTEM_NAME})
 message("-- [${PROJECT_NAME}]: Build directory:          " ${DESTDIR})
 message("-- [${PROJECT_NAME}]: C++ standart:             " ${CMAKE_CXX_STANDARD})
