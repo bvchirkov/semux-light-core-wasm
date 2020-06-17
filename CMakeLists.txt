@@ -31,6 +31,7 @@ set(TOOLS						"/cpp/emsdk/upstream/emscripten")
 set(CMAKE_TOOLCHAIN_FILE		"${TOOLS}/cmake/Modules/Platform/Emscripten.cmake")
 set(CMAKE_CXX_COMPILER			${TOOLS}/em++)
 set(CMAKE_C_COMPILER			${TOOLS}/emcc)
+set(CMAKE_AR					${TOOLS}/emar)
 set(CMAKE_CXX_STANDARD			20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -43,7 +44,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE -fvisibility=hidden -fvisibility-
 target_compile_options(${PROJECT_NAME} PRIVATE -ffunction-sections -fdata-sections)
 #target_compile_options(${PROJECT_NAME} PRIVATE -fno-rtti)
 target_link_options(${PROJECT_NAME} PRIVATE -Wl)
-set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-s DEMANGLE_SUPPORT=1 --preload-file assets --bind")
+set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "--bind") #--preload-file assets -s DEMANGLE_SUPPORT=1
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE __EMSCRIPTEN__)
 
