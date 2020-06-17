@@ -32,6 +32,7 @@ set(CMAKE_TOOLCHAIN_FILE		"${TOOLS}/cmake/Modules/Platform/Emscripten.cmake")
 set(CMAKE_CXX_COMPILER			${TOOLS}/em++)
 set(CMAKE_C_COMPILER			${TOOLS}/emcc)
 set(CMAKE_AR					${TOOLS}/emar)
+set(CMAKE_RANLIB				${TOOLS}/emranlib)
 set(CMAKE_CXX_STANDARD			20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
