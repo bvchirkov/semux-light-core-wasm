@@ -21,47 +21,58 @@ add_executable(${PROJECT_NAME}
 	main.cpp
 	)
 
-add_compile_definitions(
+target_compile_definitions(${PROJECT_NAME} PRIVATE
 	UNOSEMUXLIGHTCOREWASM_LIBRARY
 	HAVE_NETINET_IN_H
 	_GLIBCXX_USE_NANOSLEEP
+	__EMSCRIPTEN__
+	RELEASE_BUILD
+	NDEBUG
 	)
 
-set(TOOLS						"/cpp/emsdk/upstream/emscripten")
-set(CMAKE_TOOLCHAIN_FILE		"${TOOLS}/cmake/Modules/Platform/Emscripten.cmake")
-set(CMAKE_CXX_COMPILER			${TOOLS}/em++)
-set(CMAKE_C_COMPILER			${TOOLS}/emcc)
-set(CMAKE_AR					${TOOLS}/emar)
-set(CMAKE_RANLIB				${TOOLS}/emranlib)
+set(EMSCRIPTEN_ROOT_PATH		"/cpp/emsdk/upstream/emscripten")
+set(CMAKE_TOOLCHAIN_FILE		"${EMSCRIPTEN_ROOT_PATH}/cmake/Modules/Platform/Emscripten.cmake")
+set(CMAKE_CXX_COMPILER			${EMSCRIPTEN_ROOT_PATH}/em++)
+set(CMAKE_C_COMPILER			${EMSCRIPTEN_ROOT_PATH}/emcc)
 set(CMAKE_CXX_STANDARD			20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-target_compile_options(${PROJECT_NAME} PRIVATE -std=c++2a)
-target_compile_options(${PROJECT_NAME} PRIVATE -fexceptions)
-target_compile_options(${PROJECT_NAME} PRIVATE -s WASM=1)
-target_compile_options(${PROJECT_NAME} PRIVATE -O3)
+set(CMAKE_C_FLAGS_RELEASE				"" CACHE STRING "Uno-labs-overridden CMAKE_C_FLAGS_RELEASE" FORCE)
+set(CMAKE_SHARED_LINKER_FLAGS_RELEASE	"" CACHE STRING "Uno-labs-overridden CMAKE_SHARED_LINKER_FLAGS_RELEASE" FORCE)
+set(CMAKE_MODULE_LINKER_FLAGS_RELEASE	"" CACHE STRING "Uno-labs-overridden CMAKE_SHARED_LINKER_FLAGS_RELEASE" FORCE)
+set(CMAKE_EXE_LINKER_FLAGS_RELEASE		"" CACHE STRING "Uno-labs-overridden CMAKE_SHARED_LINKER_FLAGS_RELEASE" FORCE)
+set(CMAKE_CXX_FLAGS_RELEASE				"-std=c++2a -O3"
+	CACHE STRING "Uno-labs-overridden CMAKE_CXX_FLAGS_RELEASE" FORCE)
 
-target_compile_options(${PROJECT_NAME} PRIVATE -fvisibility=hidden -fvisibility-inlines-hidden)
-target_compile_options(${PROJECT_NAME} PRIVATE -ffunction-sections -fdata-sections)
-#target_compile_options(${PROJECT_NAME} PRIVATE -fno-rtti)
-target_link_options(${PROJECT_NAME} PRIVATE -Wl)
-set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "--bind") #--preload-file assets -s DEMANGLE_SUPPORT=1
+string(JOIN " " COMPILE_FLAGS
+	-s WASM=1
+	-s EXTRA_EXPORTED_RUNTIME_METHODS=['ALLOC_NORMAL','FS','UTF8ToString','allocate','ccall','getValue','setValue']
+	-s ALLOW_MEMORY_GROWTH=1
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE __EMSCRIPTEN__)
+	-fexceptions
+	-fvisibility=hidden
+	-fvisibility-inlines-hidden
+	-ffunction-sections
+	-fdata-sections
+	)
 
-message("-- [${PROJECT_NAME}]: ***************** Build mode RELEASE *****************")
-set(OUT_BUILD_MODE_PATH Release)
-target_compile_definitions(${PROJECT_NAME} PRIVATE RELEASE_BUILD)
+string(JOIN " " LINK_FLAGS
+	-s WASM=1
+
+	-Wl
+
+	--gc-sections
+	--bind
+	)
+
+set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS ${COMPILE_FLAGS})
+set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS ${LINK_FLAGS})
 
 set(PROJECT_BINARY_DIR		"${CMAKE_SOURCE_DIR}/../../bin")
 set(PROJECT_LIBRARY_DIR		"${CMAKE_SOURCE_DIR}/../../lib")
 set(EXTRAS					"${CMAKE_SOURCE_DIR}/../../include")
 set(PREFIX_FOR_EXTERNAL_TMP "${CMAKE_SOURCE_DIR}/../../tmp")
 
-file(MAKE_DIRECTORY ${EXTRAS})
-
-set(SP _)
-set(BUILD_NAME_DIR	"${CMAKE_BUILD_TYPE}${SP}${CMAKE_SYSTEM_NAME}${SP}${SYSTEM_PROCESSOR}")
 set(DESTDIR			"${PROJECT_BINARY_DIR}")
 set(LIBDIR			"${PROJECT_LIBRARY_DIR}")
 
@@ -77,7 +88,7 @@ set(LIBSODIUM		sodium)
 
 set(SEMUXLIGHTCORE  UnoSemuxLightCore)
 if (NOT EXISTS "${CMAKE_SOURCE_DIR}/../${SEMUXLIGHTCORE}")
-	message("-- [${PROJECT_NAME}]: ${SEMUXLIGHTCORE} not found")
+	message(STATUS "[${PROJECT_NAME}]: ${SEMUXLIGHTCORE} not found")
 	ExternalProject_Add(${SEMUXLIGHTCORE}_ext
 		PREFIX			  "."
 		DOWNLOAD_DIR	  "${CMAKE_SOURCE_DIR}/../${SEMUXLIGHTCORE}"
@@ -88,22 +99,21 @@ if (NOT EXISTS "${CMAKE_SOURCE_DIR}/../${SEMUXLIGHTCORE}")
 #		GIT_TAG			  aa49a351d06927fcc9e4e5d15ab73a78bdbe3f5f
 		CMAKE_ARGS		  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DSYSTEM_PROCESSOR=wasm32
 		BUILD_IN_SOURCE   ON
-		INSTALL_COMMAND	  ${TOOLS}/emmake make -j4 install
+		INSTALL_COMMAND	  ${EMSCRIPTEN_ROOT_PATH}/emmake make -j4 install
 	)
 endif()
 
 target_include_directories(${PROJECT_NAME}
 	PRIVATE ${EXTRAS}
 	PRIVATE ${EXTRAS}/${SEMUXLIGHTCORE}
-	PRIVATE "/cpp/emsdk/upstream/emscripten/system/include"
 	)
 
 target_link_directories(${PROJECT_NAME}
-	PRIVATE ${LIBDIR}
+	PUBLIC ${LIBDIR}
 	)
 
 target_link_libraries(${PROJECT_NAME}
-	PRIVATE
+	PUBLIC
 		${LIBSODIUM}
 		${GPCORE2}
 		${UTF8PROC}
@@ -111,13 +121,12 @@ target_link_libraries(${PROJECT_NAME}
 		${SEMUXLIGHTCORE}
 	)
 
-message("-- [${PROJECT_NAME}]: Target name:              " ${PROJECT_NAME}${TARGET})
-message("-- [${PROJECT_NAME}]: Target arch:              " ${SYSTEM_PROCESSOR})
-message("-- [${PROJECT_NAME}]: Target OS:                " ${CMAKE_SYSTEM_NAME})
-message("-- [${PROJECT_NAME}]: Build directory:          " ${DESTDIR})
-message("-- [${PROJECT_NAME}]: C++ standart:             " ${CMAKE_CXX_STANDARD})
-message("-- [${PROJECT_NAME}]: GCC C compiler version:   " ${CMAKE_C_COMPILER})
-message("-- [${PROJECT_NAME}]: GCC C++ compiler version: " ${CMAKE_CXX_COMPILER})
+message(STATUS "[${PROJECT_NAME}]: Target name:              " ${PROJECT_NAME}${TARGET})
+message(STATUS "[${PROJECT_NAME}]: Target arch:              " ${SYSTEM_PROCESSOR})
+message(STATUS "[${PROJECT_NAME}]: Target OS:                " ${CMAKE_SYSTEM_NAME})
+message(STATUS "[${PROJECT_NAME}]: Build directory:          " ${DESTDIR})
+message(STATUS "[${PROJECT_NAME}]: C++ standart:             " ${CMAKE_CXX_STANDARD})
+message(STATUS "[${PROJECT_NAME}]: GCC C compiler version:   " ${CMAKE_C_COMPILER})
+message(STATUS "[${PROJECT_NAME}]: GCC C++ compiler version: " ${CMAKE_CXX_COMPILER})
 
-#set_property(TARGET ${PROJECT_NAME} PROPERTY VERSION ${PROJECT_VERSION})
-#set_property(TARGET ${PROJECT_NAME} PROPERTY SOVERSION ${PROJECT_VERSION_MAJOR})
+
