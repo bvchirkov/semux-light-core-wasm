@@ -30,7 +30,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 	NDEBUG
 	)
 
-set(EMSCRIPTEN_ROOT_PATH		"/cpp/emsdk/upstream/emscripten")
+#set(EMSCRIPTEN_ROOT_PATH		"/cpp/emsdk/upstream/emscripten")
 set(CMAKE_TOOLCHAIN_FILE		"${EMSCRIPTEN_ROOT_PATH}/cmake/Modules/Platform/Emscripten.cmake")
 set(CMAKE_CXX_COMPILER			${EMSCRIPTEN_ROOT_PATH}/em++)
 set(CMAKE_C_COMPILER			${EMSCRIPTEN_ROOT_PATH}/emcc)
@@ -97,7 +97,7 @@ if (NOT EXISTS "${CMAKE_SOURCE_DIR}/../${SEMUXLIGHTCORE}")
 		TMP_DIR			  "${PREFIX_FOR_EXTERNAL_TMP}"
 		GIT_REPOSITORY    https://github.com/bvchirkov/UnoSemuxLightCore.git
 #		GIT_TAG			  aa49a351d06927fcc9e4e5d15ab73a78bdbe3f5f
-		CMAKE_ARGS		  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DSYSTEM_PROCESSOR=wasm32
+		CMAKE_ARGS		  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DEMSCRIPTEN_ROOT_PATH=${EMSCRIPTEN_ROOT_PATH}
 		BUILD_IN_SOURCE   ON
 		INSTALL_COMMAND	  ${EMSCRIPTEN_ROOT_PATH}/emmake make -j4 install
 	)
@@ -122,11 +122,9 @@ target_link_libraries(${PROJECT_NAME}
 	)
 
 message(STATUS "[${PROJECT_NAME}]: Target name:              " ${PROJECT_NAME}${TARGET})
-message(STATUS "[${PROJECT_NAME}]: Target arch:              " ${SYSTEM_PROCESSOR})
+message(STATUS "[${PROJECT_NAME}]: Target arch:              " ${CMAKE_SYSTEM_PROCESSOR})
 message(STATUS "[${PROJECT_NAME}]: Target OS:                " ${CMAKE_SYSTEM_NAME})
 message(STATUS "[${PROJECT_NAME}]: Build directory:          " ${DESTDIR})
 message(STATUS "[${PROJECT_NAME}]: C++ standart:             " ${CMAKE_CXX_STANDARD})
 message(STATUS "[${PROJECT_NAME}]: GCC C compiler version:   " ${CMAKE_C_COMPILER})
 message(STATUS "[${PROJECT_NAME}]: GCC C++ compiler version: " ${CMAKE_CXX_COMPILER})
-
-
