@@ -87,7 +87,7 @@ set(GPCRYPTOCORE	GpCryptoCore)
 set(LIBSODIUM		sodium)
 
 set(SEMUXLIGHTCORE  UnoSemuxLightCore)
-if (NOT EXISTS "${CMAKE_SOURCE_DIR}/../${SEMUXLIGHTCORE}")
+if (NOT EXISTS "${EXTRAS}/${SEMUXLIGHTCORE}" OR NOT EXISTS "${DESTDIR}/lib${SEMUXLIGHTCORE}.a")
 	message(STATUS "[${PROJECT_NAME}]: ${SEMUXLIGHTCORE} not found")
 	ExternalProject_Add(${SEMUXLIGHTCORE}_ext
 		PREFIX			  "."
