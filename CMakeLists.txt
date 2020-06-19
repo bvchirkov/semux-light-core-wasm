@@ -48,6 +48,7 @@ string(JOIN " " COMPILE_FLAGS
 	-s WASM=1
 	-s EXTRA_EXPORTED_RUNTIME_METHODS=['ALLOC_NORMAL','FS','UTF8ToString','allocate','ccall','getValue','setValue']
 	-s ALLOW_MEMORY_GROWTH=1
+	-s DISABLE_EXCEPTION_CATCHING=0
 
 	-fexceptions
 	-fvisibility=hidden
@@ -58,6 +59,7 @@ string(JOIN " " COMPILE_FLAGS
 
 string(JOIN " " LINK_FLAGS
 	-s WASM=1
+	-s DISABLE_EXCEPTION_CATCHING=0
 
 	-Wl
 
